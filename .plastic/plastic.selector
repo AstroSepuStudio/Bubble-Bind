@@ -1,0 +1,4 @@
+repository "Bubble Bind@WORDSAW@cloud"
+  path "/"
+    br "/main"
+    co "/main"
