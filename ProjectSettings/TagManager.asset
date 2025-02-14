@@ -11,6 +11,10 @@ TagManager:
   - RedCatcher
   - BlueCatcher
   - SawBlade
+  - EditorElement
+  - MoveArrow
+  - RotatingCenter
+  - ScalingHandles
   layers:
   - Default
   - TransparentFX

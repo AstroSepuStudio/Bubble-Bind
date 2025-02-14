@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1cc654f839a762f44aa14c996f1ca86c, type: 3}
+  m_Name: RedBubble
+  m_EditorClassIdentifier: 
+  ElementType: 2
+  ElementName: Red Bubble
+  ElementIcon: {fileID: 21300000, guid: dab6b431cb6cd174b918c587575dc7c4, type: 3}
+  ElementPrefab: {fileID: 6472405508317717804, guid: 0bcbf5b0c05868a46ad6efd8d12c7acb, type: 3}
+  SpriteScale: 0.25
+  ElementEditionWindow: {fileID: 8726567020804464747, guid: a264f2ffc8ef6574aa28080c37490d50, type: 3}

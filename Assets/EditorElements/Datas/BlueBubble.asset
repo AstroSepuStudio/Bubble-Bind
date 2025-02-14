@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1cc654f839a762f44aa14c996f1ca86c, type: 3}
+  m_Name: BlueBubble
+  m_EditorClassIdentifier: 
+  ElementType: 3
+  ElementName: Blue Bubble
+  ElementIcon: {fileID: 21300000, guid: d832ec855c219e74e8b88070fd3ac664, type: 3}
+  ElementPrefab: {fileID: 7686030750716744211, guid: a1ec23c1a52ff1641a2aab61945983fd, type: 3}
+  SpriteScale: 0.25
+  ElementEditionWindow: {fileID: 8726567020804464747, guid: a264f2ffc8ef6574aa28080c37490d50, type: 3}
