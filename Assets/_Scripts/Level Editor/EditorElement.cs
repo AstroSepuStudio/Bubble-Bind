@@ -126,7 +126,7 @@ public class EditorElement : MonoBehaviour
         }
     }
     
-    public void SetUpPhysics()
+    void SetUpPhysics()
     {
         Rigidbody2D rb = _child.GetComponent<Rigidbody2D>();
         if (rb == null) return;
@@ -143,10 +143,11 @@ public class EditorElement : MonoBehaviour
         }
     }
 
-    public void SetUpDynamicPlatform()
+    void SetUpDynamicPlatform()
     {
         _lineRenderer.positionCount = ElementVectors.Count;
         _lineRenderer.SetPositions(ElementVectors.ToArray());
+        _lineRenderer.loop = ElementIntegerValues[0] == 1;
 
         if (_child.TryGetComponent<DynamicPlatform>(out var dp))
         {

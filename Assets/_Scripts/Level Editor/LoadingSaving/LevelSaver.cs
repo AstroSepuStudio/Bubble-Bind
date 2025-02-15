@@ -73,14 +73,18 @@ public class LevelSaver : MonoBehaviour
 
     public void SaveLevel(LevelData levelData, string oldName)
     {
-        string folderPath = Path.Combine(Application.persistentDataPath, "PlayerLevelData");
-        string filePath = Path.Combine(folderPath, oldName + ".json");
+        string folderPath;
+        string filePath;
 
-        // Ensure the folder exists
-        if (Directory.Exists(folderPath))
-            File.Delete(filePath);
-        else
-            return;
+        if (!oldName.Equals(""))
+        {
+            folderPath = Path.Combine(Application.persistentDataPath, "PlayerLevelData");
+            filePath = Path.Combine(folderPath, oldName + ".json");
+
+            // Ensure the folder exists
+            if (Directory.Exists(filePath))
+                File.Delete(filePath);
+        }
 
         folderPath = Path.Combine(Application.persistentDataPath, "PlayerLevelData");
         filePath = Path.Combine(folderPath, levelData.LevelName + ".json");
@@ -91,6 +95,5 @@ public class LevelSaver : MonoBehaviour
 
         string json = JsonUtility.ToJson(levelData, true);
         File.WriteAllText(filePath, json);
-        Debug.Log($"Level saved to: {filePath}");
     }
 }

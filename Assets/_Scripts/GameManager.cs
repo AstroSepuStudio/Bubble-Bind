@@ -28,7 +28,8 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         Transition_Manager.UnFadeBlack();
-        Player_Input.actions["Reset"].started += KillPlayer;
+        if (!Transition_Manager._isOnMainMenu)
+            Player_Input.actions["Reset"].started += KillPlayer;
         _spawnPosition = Player_Movement.transform.position;
     }
 

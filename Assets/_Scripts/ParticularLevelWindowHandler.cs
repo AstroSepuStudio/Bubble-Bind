@@ -8,7 +8,8 @@ using UnityEngine.UI;
 public class ParticularLevelWindowHandler : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] GameObject _window;
+    public GameObject _window;
+    [SerializeField] MainMenuCanvasManager _mainMenuCanvasManager;
     [SerializeField] OfflinePlayerLevelsFetcher _offlinePlayerLevelsFetcher;
     [SerializeField] LevelSaver _levelSaver;
     [SerializeField] EditorElementDataBase _editorElementDataBase;
@@ -30,12 +31,23 @@ public class ParticularLevelWindowHandler : MonoBehaviour
     [SerializeField] float _scaleMultiplier;
     [SerializeField] float _positionMultiplier;
 
-    LevelData _currentLevel;
+    public static LevelData _currentLevel;
     string _oldLevelName;
     LevelData.LevelDifficulty[] _difficulties;
 
+    bool _initialized = false;
+
     void Start()
     {
+        Initialize();
+        _mainMenuCanvasManager.OnMainMenuRestored.AddListener(ActivateWindow);
+    }
+
+    void Initialize()
+    {
+        if (_initialized) return;
+        _initialized = true;
+
         // Clear any existing options
         _levelDifficultyDropdown.ClearOptions();
 
@@ -58,10 +70,16 @@ public class ParticularLevelWindowHandler : MonoBehaviour
         _levelDescriptionIF.onEndEdit.AddListener((value) => ChangeLevelDescription());
     }
 
+    public void ActivateWindow(GameObject window)
+    {
+        if (window == _window)
+            ActivateWindow(_currentLevel);
+    }
+
     public void ActivateWindow(LevelData levelData)
     {
-        _window.SetActive(true);
         _currentLevel = levelData;
+        _oldLevelName = "";
 
         _levelName.SetText(levelData.LevelName);
         _levelDescription.SetText(levelData.LevelDescription);
@@ -177,7 +195,6 @@ public class ParticularLevelWindowHandler : MonoBehaviour
             rectTransform.localScale = savedElement.scale * elementData.SpriteScale * _scaleMultiplier; // Use the saved scale
         }
     }
-
 
     void SaveChanges()
     {

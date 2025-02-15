@@ -114,5 +114,29 @@ public class UndoRedoManager
         ICommand selectCommand = new BulkDeselectCommand(levelEditorManager, elements);
         RecordAction(selectCommand);
     }
+
+    public void RecordInstantiateAction(LevelEditorManager levelEditorManager, EditorElement element)
+    {
+        ICommand selectCommand = new InstantiateCommand(levelEditorManager, element);
+        RecordAction(selectCommand);
+    }
+
+    public void RecordDuplicateAction(LevelEditorManager levelEditorManager, List<EditorElement> elements)
+    {
+        ICommand selectCommand = new DuplicateCommand(levelEditorManager, elements);
+        RecordAction(selectCommand);
+    }
+
+    public void RecordDeleteAction(LevelEditorManager levelEditorManager, EditorElement element)
+    {
+        ICommand selectCommand = new DeleteCommand(levelEditorManager, element);
+        RecordAction(selectCommand);
+    }
+
+    public void RecordBulkDeleteAction(LevelEditorManager levelEditorManager, List<EditorElement> elements)
+    {
+        ICommand selectCommand = new BulkDeleteCommand(levelEditorManager, elements);
+        RecordAction(selectCommand);
+    }
     #endregion
 }
