@@ -12,11 +12,10 @@ public class LevelButton : MonoBehaviour
     MainMenuCanvasManager _mainMenuCanvasManager;
     ParticularLevelWindowHandler _levelWindowHandler;
 
-    public void Initialize(string jsonData, 
+    public void Initialize(LevelData levelData, 
         ParticularLevelWindowHandler particularLevelWindowHandler, 
         MainMenuCanvasManager canvasManager)
     {
-        LevelData levelData = JsonUtility.FromJson<LevelData>(jsonData);
         _levelData = levelData;
         _levelName.SetText(levelData.LevelName);
         _levelWindowHandler = particularLevelWindowHandler;

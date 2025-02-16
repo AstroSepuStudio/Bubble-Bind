@@ -21,14 +21,14 @@ public class OfflinePlayerLevelsFetcher : MonoBehaviour
             Destroy(_contentTransform.GetChild(i).gameObject);
         }
 
-        string folderPath = Path.Combine(Application.persistentDataPath, "PlayerLevelData");
         // Get all .json files in the persistent data folder
-        string[] jsonFiles = Directory.GetFiles(folderPath, "*.json");
+        string[] jsonFiles = Directory.GetFiles(LevelSaver.LocalLevelFolder, "*.json");
 
         foreach (string filePath in jsonFiles)
         {
             // Read the JSON data from the file
             string jsonData = File.ReadAllText(filePath);
+            LevelData levelData = JsonUtility.FromJson<LevelData>(jsonData);
 
             // Instantiate the prefab
             GameObject levelInstance = Instantiate(_levelButtonPrefab, _contentTransform);
@@ -39,7 +39,7 @@ public class OfflinePlayerLevelsFetcher : MonoBehaviour
             if (levelInitializer != null)
             {
                 // Pass the JSON data to the prefab for initialization
-                levelInitializer.Initialize(jsonData, _levelWindowHandler, _mainMenuCanvasManager);
+                levelInitializer.Initialize(levelData, _levelWindowHandler, _mainMenuCanvasManager);
             }
             else
             {
@@ -51,15 +51,13 @@ public class OfflinePlayerLevelsFetcher : MonoBehaviour
     public void CreateNewLevel()
     {
         // Create a new LevelData object
-        LevelData newLevelData = new LevelData();
+        LevelData newLevelData = new();
         newLevelData.LevelName = _levelSaver.GenerateDefaultName();
+
+        string filePath = Path.Combine(LevelSaver.LocalLevelFolder, newLevelData.LevelName + ".json");
 
         // Convert the LevelData object to JSON
         string jsonData = JsonUtility.ToJson(newLevelData, true);
-
-        string folderPath = Path.Combine(Application.persistentDataPath, "PlayerLevelData");
-        // Define the file path for the new level
-        string filePath = Path.Combine(folderPath, newLevelData.LevelName + ".json");
 
         // Write the JSON data to the file
         File.WriteAllText(filePath, jsonData);
@@ -73,7 +71,7 @@ public class OfflinePlayerLevelsFetcher : MonoBehaviour
         if (levelInitializer != null)
         {
             // Pass the JSON data to the prefab for initialization
-            levelInitializer.Initialize(jsonData, _levelWindowHandler, _mainMenuCanvasManager);
+            levelInitializer.Initialize(newLevelData, _levelWindowHandler, _mainMenuCanvasManager);
         }
     }
 }

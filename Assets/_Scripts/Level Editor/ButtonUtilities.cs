@@ -44,7 +44,6 @@ public class ButtonUtilities : MonoBehaviour
     {
         _levelSaver.SaveLevel();
         _levelEditorManager.RemoveEventSubscriptions();
-        LevelLoader.LevelName = null;
         SceneManager.LoadScene("MainMenu");
     }
 }

@@ -31,7 +31,6 @@ public class ParticularLevelWindowHandler : MonoBehaviour
     [SerializeField] float _scaleMultiplier;
     [SerializeField] float _positionMultiplier;
 
-    public static LevelData _currentLevel;
     string _oldLevelName;
     LevelData.LevelDifficulty[] _difficulties;
 
@@ -73,12 +72,12 @@ public class ParticularLevelWindowHandler : MonoBehaviour
     public void ActivateWindow(GameObject window)
     {
         if (window == _window)
-            ActivateWindow(_currentLevel);
+            ActivateWindow(LevelLoader.CurrentLevelData);
     }
 
     public void ActivateWindow(LevelData levelData)
     {
-        _currentLevel = levelData;
+        LevelLoader.CurrentLevelData = levelData;
         _oldLevelName = "";
 
         _levelName.SetText(levelData.LevelName);
@@ -89,7 +88,7 @@ public class ParticularLevelWindowHandler : MonoBehaviour
         _levelDescriptionIF.text = levelData.LevelDescription;
 
         // Find the index of the target enum value
-        int index = System.Array.IndexOf(_difficulties, _currentLevel.Level_Difficulty);
+        int index = System.Array.IndexOf(_difficulties, LevelLoader.CurrentLevelData.Level_Difficulty);
 
         // Set the dropdown value to the found index
         _levelDifficultyDropdown.value = index;
@@ -115,7 +114,6 @@ public class ParticularLevelWindowHandler : MonoBehaviour
     {
         SaveChanges();
 
-        LevelLoader.LevelName = _currentLevel.LevelName;
         SceneManager.LoadScene("LevelTesting");
     }
 
@@ -123,14 +121,13 @@ public class ParticularLevelWindowHandler : MonoBehaviour
     {
         SaveChanges();
 
-        LevelLoader.LevelName = _currentLevel.LevelName;
         SceneManager.LoadScene("LevelEditor");
     }
 
     public void DeleteLevel()
     {
         string folderPath = Path.Combine(Application.persistentDataPath, "PlayerLevelData");
-        string filePath = Path.Combine(folderPath, _currentLevel.LevelName + ".json");
+        string filePath = Path.Combine(folderPath, LevelLoader.CurrentLevelData.LevelName + ".json");
 
         // Check if the file exists
         if (File.Exists(filePath))
@@ -138,8 +135,6 @@ public class ParticularLevelWindowHandler : MonoBehaviour
             // Delete the file
             File.Delete(filePath);
         }
-        else
-            Debug.LogWarning($"File '{_currentLevel.LevelName}.json' doen't exist");
 
         _offlinePlayerLevelsFetcher.FetchAndInstantiateLevels();
 
@@ -148,27 +143,27 @@ public class ParticularLevelWindowHandler : MonoBehaviour
 
     void ChangeLevelName()
     {
-        _oldLevelName = _currentLevel.LevelName.ToString();
+        _oldLevelName = LevelLoader.CurrentLevelData.LevelName.ToString();
 
-        _currentLevel.LevelName = _levelNameIF.text;
+        LevelLoader.CurrentLevelData.LevelName = _levelNameIF.text;
     }
 
     void ChangeLevelDescription()
     {
-        _currentLevel.LevelDescription = _levelDescriptionIF.text;
+        LevelLoader.CurrentLevelData.LevelDescription = _levelDescriptionIF.text;
     }
 
     void DropdownValueChanged()
     {
         // Get the selected enum value
-        _currentLevel.Level_Difficulty = (LevelData.LevelDifficulty)_levelDifficultyDropdown.value;
+        LevelLoader.CurrentLevelData.Level_Difficulty = (LevelData.LevelDifficulty)_levelDifficultyDropdown.value;
     }
 
     void BuildLevelPreview()
     {
-        for (int i = 0; i < _currentLevel.SavedElements.Count; i++)
+        for (int i = 0; i < LevelLoader.CurrentLevelData.SavedElements.Count; i++)
         {
-            SavedElement savedElement = _currentLevel.SavedElements[i];
+            SavedElement savedElement = LevelLoader.CurrentLevelData.SavedElements[i];
             EditorElementData elementData = _editorElementDataBase.EditorElementDatas[savedElement.DataIndex];
 
             if (i < _instancedImages.Count)
@@ -198,7 +193,7 @@ public class ParticularLevelWindowHandler : MonoBehaviour
 
     void SaveChanges()
     {
-        _levelSaver.SaveLevel(_currentLevel, _oldLevelName);
+        _levelSaver.SaveLevel(LevelLoader.CurrentLevelData, _oldLevelName);
         _offlinePlayerLevelsFetcher.FetchAndInstantiateLevels();
     }
 }
