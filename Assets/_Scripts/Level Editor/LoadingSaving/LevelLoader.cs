@@ -3,38 +3,31 @@ using UnityEngine;
 
 public class LevelLoader : MonoBehaviour
 {
-    public static string LevelName;
     [SerializeField] private LevelEditorManager _levelEditorManager;
     [SerializeField] LevelSaver _levelSaver;
-    private LevelData _loadedLevelData;
+    public static LevelData CurrentLevelData;
 
     private void Start()
     {
         LoadLevel();
     }
 
-    public LevelData GetLevelData() { return _loadedLevelData; }
+    // Forcefully loads an specific level (for testing the level editor)
+    public void ForceLoadLevelData(string name)
+    {
+        string filePath = Path.Combine(LevelSaver.LocalLevelFolder, name + ".json");
+
+        string jsonData = File.ReadAllText(filePath);
+        LevelData levelData = JsonUtility.FromJson<LevelData>(jsonData);
+        CurrentLevelData = levelData;
+    }
 
     public void LoadLevel()
     {
-        string folderPath = Path.Combine(Application.persistentDataPath, "PlayerLevelData");
-        string filePath = Path.Combine(folderPath, LevelName + ".json");
+        _levelEditorManager._cameraEditorElement.transform.position = CurrentLevelData.CameraPosition;
+        _levelEditorManager.ChangeElementCameraSize(CurrentLevelData.CameraSize);
 
-        if (!File.Exists(filePath))
-        {
-            CreateNewLevel();
-            Debug.LogWarning($"Level file {LevelName}.json not found, starting with an empty level.");
-            return;
-        }
-
-        string json = File.ReadAllText(filePath);
-        LevelData levelData = JsonUtility.FromJson<LevelData>(json);
-        _loadedLevelData = levelData;
-
-        _levelEditorManager._cameraEditorElement.transform.position = levelData.CameraPosition;
-        _levelEditorManager.ChangeElementCameraSize(levelData.CameraSize);
-
-        foreach (SavedElement savedElement in levelData.SavedElements)
+        foreach (SavedElement savedElement in CurrentLevelData.SavedElements)
         {
             if (savedElement.DataIndex < 0 || savedElement.DataIndex >= _levelEditorManager._elementDataBase.EditorElementDatas.Length)
             {
@@ -61,7 +54,6 @@ public class LevelLoader : MonoBehaviour
         if (_levelEditorManager._isPlayTesting)
         {
             _levelEditorManager.InitializeAllElements();
-            Debug.Log($"Play Testing {LevelName}");
         }
     }
 
@@ -74,13 +66,12 @@ public class LevelLoader : MonoBehaviour
         // Convert the LevelData object to JSON
         string jsonData = JsonUtility.ToJson(newLevelData, true);
 
-        string folderPath = Path.Combine(Application.persistentDataPath, "PlayerLevelData");
         // Define the file path for the new level
-        string filePath = Path.Combine(folderPath, newLevelData.LevelName + ".json");
+        string filePath = Path.Combine(LevelSaver.LocalLevelFolder, newLevelData.LevelName + ".json");
 
         // Write the JSON data to the file
         File.WriteAllText(filePath, jsonData);
 
-        _loadedLevelData = newLevelData;
+        CurrentLevelData = newLevelData;
     }
 }

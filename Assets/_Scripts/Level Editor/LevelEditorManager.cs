@@ -77,7 +77,7 @@ public class LevelEditorManager : MonoBehaviour
         if (_isPlayTesting) return;
 
         if (_forceLoadLevel)
-            LevelLoader.LevelName = _levelName;
+            _levelLoader.ForceLoadLevelData(_levelName);
 
         _snapValueIF.onEndEdit.AddListener((value) => ChangeSnapValue());
         _snapAngleIF.onEndEdit.AddListener((value) => ChangeSnapAngle());

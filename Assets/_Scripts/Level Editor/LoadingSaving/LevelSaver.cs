@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class LevelSaver : MonoBehaviour
 {
+    public static string LocalLevelFolder { get { return Path.Combine(Application.persistentDataPath, "PlayerLevelData"); } }
+    public static string OnlineLevelFolder { get { return Path.Combine(Application.persistentDataPath, "DownloadedLevelData"); } }
+
     [SerializeField] private LevelEditorManager _levelEditorManager;
     [SerializeField] LevelLoader _levelLoader;
 
@@ -11,8 +14,7 @@ public class LevelSaver : MonoBehaviour
     {
         int index = 0;
         string fileName = $"newLevel ({index})";
-        string folderPath = Path.Combine(Application.persistentDataPath, "PlayerLevelData");
-        while (File.Exists(Path.Combine(folderPath, fileName + ".json")))
+        while (File.Exists(Path.Combine(LocalLevelFolder, fileName + ".json")))
         {
             fileName = $"newLevel ({index})";
             index++;
@@ -23,14 +25,13 @@ public class LevelSaver : MonoBehaviour
 
     public void SaveLevel()
     {
-        string folderPath = Path.Combine(Application.persistentDataPath, "PlayerLevelData");
-        string filePath = Path.Combine(folderPath, LevelLoader.LevelName + ".json");
+        string filePath = Path.Combine(LocalLevelFolder, LevelLoader.CurrentLevelData.LevelName + ".json");
 
         // Ensure the folder exists
-        if (!Directory.Exists(folderPath))
-            Directory.CreateDirectory(folderPath);
+        if (!Directory.Exists(LocalLevelFolder))
+            Directory.CreateDirectory(LocalLevelFolder);
 
-        LevelData levelData = _levelLoader.GetLevelData();
+        LevelData levelData = LevelLoader.CurrentLevelData;
         if (levelData != null)
             levelData.SavedElements.Clear();
         else
@@ -66,6 +67,7 @@ public class LevelSaver : MonoBehaviour
             }
         }
 
+        LevelLoader.CurrentLevelData = levelData;
         string json = JsonUtility.ToJson(levelData, true);
         File.WriteAllText(filePath, json);
         Debug.Log($"Level saved to: {filePath}");
@@ -73,25 +75,20 @@ public class LevelSaver : MonoBehaviour
 
     public void SaveLevel(LevelData levelData, string oldName)
     {
-        string folderPath;
         string filePath;
 
         if (!oldName.Equals(""))
         {
-            folderPath = Path.Combine(Application.persistentDataPath, "PlayerLevelData");
-            filePath = Path.Combine(folderPath, oldName + ".json");
+            filePath = Path.Combine(LocalLevelFolder, oldName + ".json");
 
-            // Ensure the folder exists
-            if (Directory.Exists(filePath))
-                File.Delete(filePath);
+            File.Delete(filePath);
         }
 
-        folderPath = Path.Combine(Application.persistentDataPath, "PlayerLevelData");
-        filePath = Path.Combine(folderPath, levelData.LevelName + ".json");
+        filePath = Path.Combine(LocalLevelFolder, levelData.LevelName + ".json");
 
         // Ensure the folder exists
-        if (!Directory.Exists(folderPath))
-            Directory.CreateDirectory(folderPath);
+        if (!Directory.Exists(LocalLevelFolder))
+            Directory.CreateDirectory(LocalLevelFolder);
 
         string json = JsonUtility.ToJson(levelData, true);
         File.WriteAllText(filePath, json);
