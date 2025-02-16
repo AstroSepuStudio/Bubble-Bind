@@ -9,14 +9,18 @@ public class LevelButton : MonoBehaviour
     [SerializeField] Image _preview;
 
     LevelData _levelData;
+    MainMenuCanvasManager _mainMenuCanvasManager;
     ParticularLevelWindowHandler _levelWindowHandler;
 
-    public void Initialize(string jsonData, ParticularLevelWindowHandler particularLevelWindowHandler)
+    public void Initialize(string jsonData, 
+        ParticularLevelWindowHandler particularLevelWindowHandler, 
+        MainMenuCanvasManager canvasManager)
     {
         LevelData levelData = JsonUtility.FromJson<LevelData>(jsonData);
         _levelData = levelData;
         _levelName.SetText(levelData.LevelName);
         _levelWindowHandler = particularLevelWindowHandler;
+        _mainMenuCanvasManager = canvasManager;
 
         if (levelData.IsLevelVerified)
             _levelVerificationState.SetText("Verified");
@@ -26,6 +30,7 @@ public class LevelButton : MonoBehaviour
 
     public void OnButtonPressed()
     {
+        _mainMenuCanvasManager.OpenWindow(_levelWindowHandler._window);
         _levelWindowHandler.ActivateWindow(_levelData);
     }
 }

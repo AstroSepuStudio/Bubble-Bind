@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 public class TransitionManager : MonoBehaviour
 {
     [SerializeField] GameObject _menuObj;
-    [SerializeField] bool _isOnMainMenu;
+    public bool _isOnMainMenu;
     [SerializeField] CanvasGroup _fadeTransitionGroup;
     [SerializeField] float _fadeTransitionDuration;
 
@@ -75,6 +75,7 @@ public class TransitionManager : MonoBehaviour
 
     IEnumerator UnFadeFromBlack()
     {
+        _fadeTransitionGroup.alpha = 1;
         float timer = 0;
 
         while (timer < _fadeTransitionDuration)

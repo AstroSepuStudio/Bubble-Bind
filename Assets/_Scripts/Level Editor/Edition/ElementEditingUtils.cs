@@ -59,10 +59,10 @@ public class ElementEditingUtils : MonoBehaviour
                 Vector2InputField tmp2 = tmp.GetComponent<Vector2InputField>();
 
                 tmp2.X_InputField.onEndEdit.AddListener((value) => 
-                    SetPosition(_vectors2IF.Count, LevelEditorManager.LevelEditorAxis.X));
+                    SetPosition(i, LevelEditorManager.LevelEditorAxis.X));
 
                 tmp2.Y_InputField.onEndEdit.AddListener((value) => 
-                    SetPosition(_vectors2IF.Count, LevelEditorManager.LevelEditorAxis.Y));
+                    SetPosition(i, LevelEditorManager.LevelEditorAxis.Y));
 
                 _vectors2IF.Add(tmp2);
             }
@@ -451,9 +451,6 @@ public class ElementEditingUtils : MonoBehaviour
     {
         foreach (var item in _levelEditorManager._selectedElements)
         {
-            if (item.ElementVectors.Count <= index)
-                continue;
-
             if (index == 0)
             {
                 _vectors2IF[index].X_InputField.text = "0";
@@ -462,12 +459,16 @@ public class ElementEditingUtils : MonoBehaviour
             }
 
             if (axis == LevelEditorManager.LevelEditorAxis.X)
+            {
                 item.ElementVectors[index] = 
                     new Vector3(float.Parse(_vectors2IF[index].X_InputField.text), item.ElementVectors[index].y, 0);
+            }
             
             if (axis == LevelEditorManager.LevelEditorAxis.Y)
+            {
                 item.ElementVectors[index] = 
                     new Vector3(item.ElementVectors[index].x, float.Parse(_vectors2IF[index].Y_InputField.text), 0);
+            }
         }
 
         UpdateDynamicPlatformLineRenderer();
@@ -481,13 +482,14 @@ public class ElementEditingUtils : MonoBehaviour
             (float.Parse(_vectors2IF[^1].X_InputField.text) + 1,
             float.Parse(_vectors2IF[^1].Y_InputField.text), 0);
 
+        int index = _vectors2IF.Count;
         tmp2.X_InputField.text = newPos.x.ToString();
         tmp2.X_InputField.onEndEdit.AddListener((value) =>
-            SetPosition(_vectors2IF.Count, LevelEditorManager.LevelEditorAxis.X));
+            SetPosition(index, LevelEditorManager.LevelEditorAxis.X));
 
         tmp2.Y_InputField.text = newPos.y.ToString();
         tmp2.Y_InputField.onEndEdit.AddListener((value) =>
-            SetPosition(_vectors2IF.Count, LevelEditorManager.LevelEditorAxis.Y));
+            SetPosition(index, LevelEditorManager.LevelEditorAxis.Y));
 
         _vectors2IF.Add(tmp2);
 
@@ -533,6 +535,8 @@ public class ElementEditingUtils : MonoBehaviour
                 item.ElementIntegerValues[0] = 1;
             else
                 item.ElementIntegerValues[0] = 0;
+
+            item._lineRenderer.loop = _dynamicPlatLoopToggle.isOn;
         }
     }
 

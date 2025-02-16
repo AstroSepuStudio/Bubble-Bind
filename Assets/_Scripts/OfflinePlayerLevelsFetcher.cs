@@ -7,6 +7,7 @@ public class OfflinePlayerLevelsFetcher : MonoBehaviour
     public Transform _contentTransform; // The parent transform to instantiate the prefabs under
     [SerializeField] LevelSaver _levelSaver;
     [SerializeField] ParticularLevelWindowHandler _levelWindowHandler;
+    [SerializeField] MainMenuCanvasManager _mainMenuCanvasManager;
 
     void Start()
     {
@@ -38,7 +39,7 @@ public class OfflinePlayerLevelsFetcher : MonoBehaviour
             if (levelInitializer != null)
             {
                 // Pass the JSON data to the prefab for initialization
-                levelInitializer.Initialize(jsonData, _levelWindowHandler);
+                levelInitializer.Initialize(jsonData, _levelWindowHandler, _mainMenuCanvasManager);
             }
             else
             {
@@ -72,7 +73,7 @@ public class OfflinePlayerLevelsFetcher : MonoBehaviour
         if (levelInitializer != null)
         {
             // Pass the JSON data to the prefab for initialization
-            levelInitializer.Initialize(jsonData, _levelWindowHandler);
+            levelInitializer.Initialize(jsonData, _levelWindowHandler, _mainMenuCanvasManager);
         }
     }
 }

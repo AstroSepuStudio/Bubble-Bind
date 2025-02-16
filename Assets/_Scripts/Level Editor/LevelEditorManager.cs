@@ -265,10 +265,19 @@ public class LevelEditorManager : MonoBehaviour
         element._data = data;
         element.ElementIndex = newIndex;
 
+        // !ignoreSetUp means the element is being instantiated by the player, not by the level loader
         if (!ignoreSetUp)
+        {
             element.SetUpElement(this);
+
+            //UndoRedoManager.RecordExclusiveSelectAction(this, element, _selectedElements);
+            DeselectElements(true);
+            SelectElement(element);
+        }
+
         _instancedElements.Add(element);
-        
+        if (!_isPlayTesting)
+            UndoRedoManager.RecordInstantiateAction(this, element);
         return element;
     }
 
@@ -280,6 +289,7 @@ public class LevelEditorManager : MonoBehaviour
 
         // Create a temporary list to avoid modifying the list while iterating
         List<EditorElement> elementsToDestroy = new (_selectedElements);
+        UndoRedoManager.RecordBulkDeleteAction(this, elementsToDestroy);
 
         // Destroy each selected element
         foreach (var element in elementsToDestroy)
@@ -298,6 +308,34 @@ public class LevelEditorManager : MonoBehaviour
 
             // Destroy the GameObject
             Destroy(element.gameObject);
+        }
+    }
+
+    public void DestroyElement(EditorElement elementToDestroy)
+    {
+        bool found = false;
+        // Destroy each selected element
+        foreach (var element in _instancedElements)
+        {
+            if (element != elementToDestroy)
+                continue;
+            found = true;
+            break;
+        }
+
+        if (found)
+        {
+            // Remove the element from the instanced elements list
+            _instancedElements.Remove(elementToDestroy);
+
+            // Remove the element from the selected elements list
+            _selectedElements.Remove(elementToDestroy);
+
+            // Invoke the OnElementDeselected event
+            OnElementDestroyed?.Invoke(elementToDestroy);
+
+            // Destroy the GameObject
+            Destroy(elementToDestroy.gameObject);
         }
     }
 
@@ -358,6 +396,8 @@ public class LevelEditorManager : MonoBehaviour
             _selectedElements.Add(duplicate);
             OnElementSelected?.Invoke(duplicate);
         }
+
+        UndoRedoManager.RecordDuplicateAction(this, duplicatedElements);
     }
 
     public void StartLevel()
@@ -395,6 +435,16 @@ public class LevelEditorManager : MonoBehaviour
     {
         _modifierConsumed = true;
         UndoRedoManager.Redo();
+    }
+
+    public int GetDataIndexFromEED(EditorElementData data)
+    {
+        for (int i = 0; i < _elementDataBase.EditorElementDatas.Length; i++)
+        {
+            if (_elementDataBase.EditorElementDatas[i] == data)
+                return i;
+        }
+        return 0;
     }
 
     #region Player Preferences
@@ -737,6 +787,5 @@ public class LevelEditorManager : MonoBehaviour
     {
         _scaleMode.StartScaling(hit.point, GetAxisFromString(hit.transform.gameObject.name.Split(" ")[0]));
     }
-
     #endregion
 }

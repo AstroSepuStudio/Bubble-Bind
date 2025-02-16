@@ -5325,7 +5325,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _levelLoader: {fileID: 708760753}
   _levelSaver: {fileID: 708760754}
-  _forceLoadLevel: 1
+  _forceLoadLevel: 0
   _levelName: Nivel Nuevo 2
   _isPlayTesting: 0
   _playerInput: {fileID: 793620648}
@@ -5800,6 +5800,14 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: dcce1912-9d57-427d-b461-23fa327a9cc5
     m_ActionName: 'LevelEditor/Scroll[/Mouse/scroll/down,/Mouse/scroll/up]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 993bbe21-5a14-4627-9b14-d8627f705552
+    m_ActionName: 'LevelEditor/Undo[/Keyboard/ctrl,/Keyboard/z]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 6ac203d9-9f99-4b1c-a7b3-a9c485b38f50
+    m_ActionName: 'LevelEditor/Redo[/Keyboard/ctrl,/Keyboard/y]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: LevelEditor
