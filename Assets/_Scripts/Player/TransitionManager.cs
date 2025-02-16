@@ -75,6 +75,7 @@ public class TransitionManager : MonoBehaviour
 
     IEnumerator UnFadeFromBlack()
     {
+        _fadeTransitionGroup.alpha = 1;
         float timer = 0;
 
         while (timer < _fadeTransitionDuration)
