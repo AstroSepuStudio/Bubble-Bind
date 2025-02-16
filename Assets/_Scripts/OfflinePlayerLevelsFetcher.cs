@@ -27,8 +27,9 @@ public class OfflinePlayerLevelsFetcher : MonoBehaviour
         foreach (string filePath in jsonFiles)
         {
             // Read the JSON data from the file
-            string jsonData = File.ReadAllText(filePath);
-            LevelData levelData = JsonUtility.FromJson<LevelData>(jsonData);
+            string encryptedJson = File.ReadAllText(filePath);
+            string json = EncryptionUtility.Decrypt(encryptedJson);
+            LevelData levelData = JsonUtility.FromJson<LevelData>(json);
 
             // Instantiate the prefab
             GameObject levelInstance = Instantiate(_levelButtonPrefab, _contentTransform);
@@ -56,11 +57,9 @@ public class OfflinePlayerLevelsFetcher : MonoBehaviour
 
         string filePath = Path.Combine(LevelSaver.LocalLevelFolder, newLevelData.LevelName + ".json");
 
-        // Convert the LevelData object to JSON
-        string jsonData = JsonUtility.ToJson(newLevelData, true);
-
-        // Write the JSON data to the file
-        File.WriteAllText(filePath, jsonData);
+        string json = JsonUtility.ToJson(newLevelData, true);
+        string encryptedJson = EncryptionUtility.Encrypt(json);
+        File.WriteAllText(filePath, encryptedJson);
 
         // Instantiate the prefab for the new level
         GameObject levelInstance = Instantiate(_levelButtonPrefab, _contentTransform);

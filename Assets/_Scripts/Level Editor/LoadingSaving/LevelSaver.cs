@@ -69,7 +69,9 @@ public class LevelSaver : MonoBehaviour
 
         LevelLoader.CurrentLevelData = levelData;
         string json = JsonUtility.ToJson(levelData, true);
-        File.WriteAllText(filePath, json);
+        string encryptedJson = EncryptionUtility.Encrypt(json);
+
+        File.WriteAllText(filePath, encryptedJson);
         Debug.Log($"Level saved to: {filePath}");
     }
 
@@ -91,6 +93,7 @@ public class LevelSaver : MonoBehaviour
             Directory.CreateDirectory(LocalLevelFolder);
 
         string json = JsonUtility.ToJson(levelData, true);
-        File.WriteAllText(filePath, json);
+        string encryptedJson = EncryptionUtility.Encrypt(json);
+        File.WriteAllText(filePath, encryptedJson);
     }
 }
