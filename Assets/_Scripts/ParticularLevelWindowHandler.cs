@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using static LevelData;
 
 public class ParticularLevelWindowHandler : MonoBehaviour
 {
@@ -62,23 +63,23 @@ public class ParticularLevelWindowHandler : MonoBehaviour
         // Optionally, set the default value
         _levelDifficultyDropdown.value = 0;
         _levelDifficultyDropdown.RefreshShownValue();
-
-        // Add listener for when the value of the Dropdown changes
-        _levelDifficultyDropdown.onValueChanged.AddListener((value) => DropdownValueChanged());
-        _levelNameIF.onEndEdit.AddListener((value) => ChangeLevelName());
-        _levelDescriptionIF.onEndEdit.AddListener((value) => ChangeLevelDescription());
     }
 
     public void ActivateWindow(GameObject window)
     {
         if (window == _window)
-            ActivateWindow(LevelLoader.CurrentLevelData);
+            ActivateWindow(LevelLoader.CurrentLevelPath);
     }
 
-    public void ActivateWindow(LevelData levelData)
+    public void ActivateWindow(string levelPath)
     {
-        LevelLoader.CurrentLevelData = levelData;
-        _oldLevelName = "";
+        // Get LevelData
+        string encryptedJson = File.ReadAllText(levelPath);
+        string json = EncryptionUtility.Decrypt(encryptedJson);
+        LevelData levelData = JsonUtility.FromJson<LevelData>(json);
+
+        LevelLoader.CurrentLevelPath = levelPath;
+        _oldLevelName = levelData.LevelName;
 
         _levelName.SetText(levelData.LevelName);
         _levelDescription.SetText(levelData.LevelDescription);
@@ -88,13 +89,13 @@ public class ParticularLevelWindowHandler : MonoBehaviour
         _levelDescriptionIF.text = levelData.LevelDescription;
 
         // Find the index of the target enum value
-        int index = System.Array.IndexOf(_difficulties, LevelLoader.CurrentLevelData.Level_Difficulty);
+        int index = System.Array.IndexOf(_difficulties, levelData.Level_Difficulty);
 
         // Set the dropdown value to the found index
         _levelDifficultyDropdown.value = index;
         _levelDifficultyDropdown.RefreshShownValue();
 
-        BuildLevelPreview();
+        BuildLevelPreview(levelData);
     }
 
     public void DeactivateWindow(bool levelDeleted)
@@ -126,14 +127,11 @@ public class ParticularLevelWindowHandler : MonoBehaviour
 
     public void DeleteLevel()
     {
-        string folderPath = Path.Combine(Application.persistentDataPath, "PlayerLevelData");
-        string filePath = Path.Combine(folderPath, LevelLoader.CurrentLevelData.LevelName + ".json");
-
         // Check if the file exists
-        if (File.Exists(filePath))
+        if (File.Exists(LevelLoader.CurrentLevelPath))
         {
             // Delete the file
-            File.Delete(filePath);
+            File.Delete(LevelLoader.CurrentLevelPath);
         }
 
         _offlinePlayerLevelsFetcher.FetchAndInstantiateLevels();
@@ -141,29 +139,11 @@ public class ParticularLevelWindowHandler : MonoBehaviour
         DeactivateWindow(true);
     }
 
-    void ChangeLevelName()
+    void BuildLevelPreview(LevelData levelData)
     {
-        _oldLevelName = LevelLoader.CurrentLevelData.LevelName.ToString();
-
-        LevelLoader.CurrentLevelData.LevelName = _levelNameIF.text;
-    }
-
-    void ChangeLevelDescription()
-    {
-        LevelLoader.CurrentLevelData.LevelDescription = _levelDescriptionIF.text;
-    }
-
-    void DropdownValueChanged()
-    {
-        // Get the selected enum value
-        LevelLoader.CurrentLevelData.Level_Difficulty = (LevelData.LevelDifficulty)_levelDifficultyDropdown.value;
-    }
-
-    void BuildLevelPreview()
-    {
-        for (int i = 0; i < LevelLoader.CurrentLevelData.SavedElements.Count; i++)
+        for (int i = 0; i < levelData.SavedElements.Count; i++)
         {
-            SavedElement savedElement = LevelLoader.CurrentLevelData.SavedElements[i];
+            SavedElement savedElement = levelData.SavedElements[i];
             EditorElementData elementData = _editorElementDataBase.EditorElementDatas[savedElement.DataIndex];
 
             if (i < _instancedImages.Count)
@@ -193,7 +173,16 @@ public class ParticularLevelWindowHandler : MonoBehaviour
 
     void SaveChanges()
     {
-        _levelSaver.SaveLevel(LevelLoader.CurrentLevelData, _oldLevelName);
+        // Get LevelData
+        string encryptedJson = File.ReadAllText(LevelLoader.CurrentLevelPath);
+        string json = EncryptionUtility.Decrypt(encryptedJson);
+        LevelData levelData = JsonUtility.FromJson<LevelData>(json);
+
+        levelData.LevelName = _levelNameIF.text;
+        levelData.LevelDescription = _levelDescriptionIF.text;
+        levelData.Level_Difficulty = (LevelDifficulty)_levelDifficultyDropdown.value;
+
+        _levelSaver.SaveLevel(levelData, _oldLevelName);
         _offlinePlayerLevelsFetcher.FetchAndInstantiateLevels();
     }
 }
