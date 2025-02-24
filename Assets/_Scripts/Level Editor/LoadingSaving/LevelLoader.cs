@@ -5,7 +5,7 @@ public class LevelLoader : MonoBehaviour
 {
     [SerializeField] private LevelEditorManager _levelEditorManager;
     [SerializeField] LevelSaver _levelSaver;
-    public static LevelData CurrentLevelData;
+    public static string CurrentLevelPath;
 
     private void Start()
     {
@@ -17,17 +17,20 @@ public class LevelLoader : MonoBehaviour
     {
         string filePath = Path.Combine(LevelSaver.LocalLevelFolder, name + ".json");
 
-        string jsonData = File.ReadAllText(filePath);
-        LevelData levelData = JsonUtility.FromJson<LevelData>(jsonData);
-        CurrentLevelData = levelData;
+        CurrentLevelPath = filePath;
     }
 
     public void LoadLevel()
     {
-        _levelEditorManager._cameraEditorElement.transform.position = CurrentLevelData.CameraPosition;
-        _levelEditorManager.ChangeElementCameraSize(CurrentLevelData.CameraSize);
+        // Get LevelData
+        string encryptedJson = File.ReadAllText(LevelLoader.CurrentLevelPath);
+        string json = EncryptionUtility.Decrypt(encryptedJson);
+        LevelData levelData = JsonUtility.FromJson<LevelData>(json);
 
-        foreach (SavedElement savedElement in CurrentLevelData.SavedElements)
+        _levelEditorManager._cameraEditorElement.transform.position = levelData.CameraPosition;
+        _levelEditorManager.ChangeElementCameraSize(levelData.CameraSize);
+
+        foreach (SavedElement savedElement in levelData.SavedElements)
         {
             if (savedElement.DataIndex < 0 || savedElement.DataIndex >= _levelEditorManager._elementDataBase.EditorElementDatas.Length)
             {
@@ -72,6 +75,6 @@ public class LevelLoader : MonoBehaviour
         // Write the JSON data to the file
         File.WriteAllText(filePath, jsonData);
 
-        CurrentLevelData = newLevelData;
+        CurrentLevelPath = filePath;
     }
 }

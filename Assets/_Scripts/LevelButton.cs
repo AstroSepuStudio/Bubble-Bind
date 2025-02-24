@@ -1,3 +1,4 @@
+using System.IO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,15 +9,21 @@ public class LevelButton : MonoBehaviour
     [SerializeField] TextMeshProUGUI _levelVerificationState;
     [SerializeField] Image _preview;
 
-    LevelData _levelData;
+    string _levelPath;
     MainMenuCanvasManager _mainMenuCanvasManager;
     ParticularLevelWindowHandler _levelWindowHandler;
 
-    public void Initialize(LevelData levelData, 
-        ParticularLevelWindowHandler particularLevelWindowHandler, 
+    public void Initialize(string levelPath,
+        ParticularLevelWindowHandler particularLevelWindowHandler,
         MainMenuCanvasManager canvasManager)
     {
-        _levelData = levelData;
+        // Get LevelData
+        string encryptedJson = File.ReadAllText(levelPath);
+        string json = EncryptionUtility.Decrypt(encryptedJson);
+        LevelData levelData = JsonUtility.FromJson<LevelData>(json);
+
+        // Set up button
+        _levelPath = levelPath;
         _levelName.SetText(levelData.LevelName);
         _levelWindowHandler = particularLevelWindowHandler;
         _mainMenuCanvasManager = canvasManager;
@@ -30,6 +37,6 @@ public class LevelButton : MonoBehaviour
     public void OnButtonPressed()
     {
         _mainMenuCanvasManager.OpenWindow(_levelWindowHandler._window);
-        _levelWindowHandler.ActivateWindow(_levelData);
+        _levelWindowHandler.ActivateWindow(_levelPath);
     }
 }

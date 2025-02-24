@@ -26,26 +26,12 @@ public class OfflinePlayerLevelsFetcher : MonoBehaviour
 
         foreach (string filePath in jsonFiles)
         {
-            // Read the JSON data from the file
-            string encryptedJson = File.ReadAllText(filePath);
-            string json = EncryptionUtility.Decrypt(encryptedJson);
-            LevelData levelData = JsonUtility.FromJson<LevelData>(json);
-
             // Instantiate the prefab
             GameObject levelInstance = Instantiate(_levelButtonPrefab, _contentTransform);
-
-            // Get the component that will handle the initialization
             LevelButton levelInitializer = levelInstance.GetComponent<LevelButton>();
 
             if (levelInitializer != null)
-            {
-                // Pass the JSON data to the prefab for initialization
-                levelInitializer.Initialize(levelData, _levelWindowHandler, _mainMenuCanvasManager);
-            }
-            else
-            {
-                Debug.LogError("LevelInitializer component not found on the prefab.");
-            }
+                levelInitializer.Initialize(filePath, _levelWindowHandler, _mainMenuCanvasManager);
         }
     }
 
@@ -70,7 +56,7 @@ public class OfflinePlayerLevelsFetcher : MonoBehaviour
         if (levelInitializer != null)
         {
             // Pass the JSON data to the prefab for initialization
-            levelInitializer.Initialize(newLevelData, _levelWindowHandler, _mainMenuCanvasManager);
+            levelInitializer.Initialize(filePath, _levelWindowHandler, _mainMenuCanvasManager);
         }
     }
 }

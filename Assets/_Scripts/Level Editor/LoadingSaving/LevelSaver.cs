@@ -25,13 +25,15 @@ public class LevelSaver : MonoBehaviour
 
     public void SaveLevel()
     {
-        string filePath = Path.Combine(LocalLevelFolder, LevelLoader.CurrentLevelData.LevelName + ".json");
+        // Get LevelData
+        string encryptedJson = File.ReadAllText(LevelLoader.CurrentLevelPath);
+        string json = EncryptionUtility.Decrypt(encryptedJson);
+        LevelData levelData = JsonUtility.FromJson<LevelData>(json);
 
         // Ensure the folder exists
         if (!Directory.Exists(LocalLevelFolder))
             Directory.CreateDirectory(LocalLevelFolder);
 
-        LevelData levelData = LevelLoader.CurrentLevelData;
         if (levelData != null)
             levelData.SavedElements.Clear();
         else
@@ -67,19 +69,18 @@ public class LevelSaver : MonoBehaviour
             }
         }
 
-        LevelLoader.CurrentLevelData = levelData;
-        string json = JsonUtility.ToJson(levelData, true);
-        string encryptedJson = EncryptionUtility.Encrypt(json);
+        json = JsonUtility.ToJson(levelData, true);
+        encryptedJson = EncryptionUtility.Encrypt(json);
 
-        File.WriteAllText(filePath, encryptedJson);
-        Debug.Log($"Level saved to: {filePath}");
+        File.WriteAllText(LevelLoader.CurrentLevelPath, encryptedJson);
+        Debug.Log($"Level saved to: {LevelLoader.CurrentLevelPath}");
     }
 
     public void SaveLevel(LevelData levelData, string oldName)
     {
         string filePath;
 
-        if (!oldName.Equals(""))
+        if (!oldName.Equals(levelData.LevelName))
         {
             filePath = Path.Combine(LocalLevelFolder, oldName + ".json");
 
