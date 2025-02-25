@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      AstroSepuStudioLogo_0: -2357724675030018390
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
