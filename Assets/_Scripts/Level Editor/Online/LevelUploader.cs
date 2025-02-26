@@ -3,6 +3,15 @@ using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
 
+[System.Serializable]
+public class LevelUploadRequest
+{
+    public string nombrelvl;
+    public string descripcion;
+    public string dificultad;
+    public string datos_cifrados;
+}
+
 public class LevelUploader : MonoBehaviour
 {
     // URL del endpoint del backend
@@ -18,17 +27,15 @@ public class LevelUploader : MonoBehaviour
             _mainCanvasManager.SendAlertMessage("You need to log in in order to upload a level");
     }
 
-    // Función para cargar un nivel cifrado y enviarlo al backend
+    // FunciÃ³n para cargar un nivel cifrado y enviarlo al backend
     IEnumerator UploadLevelToBackend()
     {
-        // 1. Leer el archivo JSON cifrado
         if (!File.Exists(LevelLoader.CurrentLevelPath))
         {
             _mainCanvasManager.SendAlertMessage("The JSON file does not exist: " + LevelLoader.CurrentLevelPath);
             yield break;
         }
 
-        // Get LevelData
         string encryptedJson = File.ReadAllText(LevelLoader.CurrentLevelPath);
         string json = EncryptionUtility.Decrypt(encryptedJson);
         LevelData levelData = JsonUtility.FromJson<LevelData>(json);
