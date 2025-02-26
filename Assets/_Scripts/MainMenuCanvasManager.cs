@@ -1,7 +1,10 @@
+using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class MainMenuCanvasManager : MonoBehaviour
 {
@@ -9,10 +12,21 @@ public class MainMenuCanvasManager : MonoBehaviour
     [SerializeField] private GameObject[] _windows;
     public UnityEvent<GameObject> OnMainMenuRestored;
 
+    [Header("Log In")]
+    [SerializeField] AuthenticationManager _authenticationManager;
+    [SerializeField] GameObject _loginWindow;
+    [SerializeField] GameObject _logoutWindow;
+    [SerializeField] TextMeshProUGUI _logoutUsernameTxt;
+
     [Header("Transitions")]
     [SerializeField] TransitionManager _transitionManager;
     bool _loading;
     string _sceneOnStandby;
+
+    [Header("Message Window")]
+    [SerializeField] GameObject _messageWindow;
+    [SerializeField] TextMeshProUGUI _messageWinText;
+    [SerializeField] Button _messageWinButton;
 
     private void Start()
     {
@@ -81,5 +95,43 @@ public class MainMenuCanvasManager : MonoBehaviour
     void LoadStandbyScene()
     {
         SceneManager.LoadScene(_sceneOnStandby);
+    }
+
+    public void OpenLoginWindow()
+    {
+        if (_authenticationManager.IsLoggedIn())
+        {
+            _logoutUsernameTxt.SetText(_authenticationManager.GetToken());
+            OpenWindow(_logoutWindow);
+        }
+        else
+            OpenWindow(_loginWindow);
+    }
+
+    public void SendAlertMessage(string message, Action onButtonClick)
+    {
+        // Set the message
+        _messageWinText.text = message;
+
+        // Wrap the action in a method that removes itself
+        void ClickAction()
+        {
+            onButtonClick?.Invoke();
+            _messageWinButton.onClick.RemoveListener(ClickAction); // Unsubscribe
+        }
+
+        _messageWinButton.onClick.AddListener(ClickAction);
+
+        // Show the window
+        _messageWindow.SetActive(true);
+    }
+
+    public void SendAlertMessage(string message)
+    {
+        // Set the message
+        _messageWinText.text = message;
+
+        // Show the window
+        _messageWindow.SetActive(true);
     }
 }

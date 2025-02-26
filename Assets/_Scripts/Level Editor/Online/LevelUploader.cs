@@ -14,19 +14,25 @@ public class LevelUploadRequest
 
 public class LevelUploader : MonoBehaviour
 {
-    private string backendUrl = "http://localhost/BubbleBindBackend/PHP/api/savelvl.php";
-    [SerializeField] string jwtToken = "TU_TOKEN_JWT";
+    // URL del endpoint del backend
+    [SerializeField] string backendUrl = "http://localhost/BubbleBindBackend/PHP/api/savelvl.php";
+    [SerializeField] AuthenticationManager _authenticationManager;
+    [SerializeField] MainMenuCanvasManager _mainCanvasManager;
 
     public void UploadCurrentLevelToBackend()
     {
-        StartCoroutine(UploadLevelToBackend());
+        if (_authenticationManager.IsLoggedIn())
+            StartCoroutine(UploadLevelToBackend());
+        else
+            _mainCanvasManager.SendAlertMessage("You need to log in in order to upload a level");
     }
 
-    public IEnumerator UploadLevelToBackend()
+    // FunciÃ³n para cargar un nivel cifrado y enviarlo al backend
+    IEnumerator UploadLevelToBackend()
     {
         if (!File.Exists(LevelLoader.CurrentLevelPath))
         {
-            Debug.LogError("El archivo JSON no existe: " + LevelLoader.CurrentLevelPath);
+            _mainCanvasManager.SendAlertMessage("The JSON file does not exist: " + LevelLoader.CurrentLevelPath);
             yield break;
         }
 
@@ -34,14 +40,8 @@ public class LevelUploader : MonoBehaviour
         string json = EncryptionUtility.Decrypt(encryptedJson);
         LevelData levelData = JsonUtility.FromJson<LevelData>(json);
 
-        if (levelData == null || string.IsNullOrEmpty(levelData.LevelName) ||
-            string.IsNullOrEmpty(levelData.LevelDescription) || string.IsNullOrEmpty(encryptedJson))
-        {
-            Debug.LogError("Error: Alguno de los campos está vacío.");
-            yield break;
-        }
-
-        var requestData = new LevelUploadRequest
+        // 2. Crear los datos para enviar al backend
+        LevelUploadRequestData requestData = new()
         {
             nombrelvl = levelData.LevelName,
             descripcion = levelData.LevelDescription,
@@ -51,24 +51,43 @@ public class LevelUploader : MonoBehaviour
 
         string jsonData = JsonUtility.ToJson(requestData);
 
+        // 3. Configurar la solicitud HTTP POST
         using (UnityWebRequest request = new UnityWebRequest(backendUrl, "POST"))
         {
             byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
             request.uploadHandler = new UploadHandlerRaw(bodyRaw);
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("Content-Type", "application/json");
-            request.SetRequestHeader("Authorization", "Bearer " + jwtToken);
+            request.SetRequestHeader("Authorization", "Bearer " + _authenticationManager.GetToken());
 
+            // 4. Enviar la solicitud
             yield return request.SendWebRequest();
+
+            LevelUploadResponse response = JsonUtility.FromJson<LevelUploadResponse>(request.downloadHandler.text);
 
             if (request.result == UnityWebRequest.Result.Success)
             {
-                Debug.Log("Respuesta del servidor: " + request.downloadHandler.text);
+                _mainCanvasManager.SendAlertMessage(response.message);
             }
             else
             {
-                Debug.LogError("Error al enviar el nivel: " + request.error + "\nRespuesta: " + request.downloadHandler.text);
+                _mainCanvasManager.SendAlertMessage("Error while uploading the level: " + request.error);
             }
         }
     }
+}
+
+[System.Serializable]
+public class LevelUploadRequestData
+{
+    public string nombrelvl;
+    public string descripcion;
+    public string dificultad;
+    public string datos_cifrados;
+}
+
+[System.Serializable]
+public class LevelUploadResponse
+{
+    public string message;
 }
