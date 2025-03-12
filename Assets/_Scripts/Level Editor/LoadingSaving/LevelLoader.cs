@@ -23,9 +23,13 @@ public class LevelLoader : MonoBehaviour
     public void LoadLevel()
     {
         // Get LevelData
-        string encryptedJson = File.ReadAllText(LevelLoader.CurrentLevelPath);
+        Debug.Log(CurrentLevelPath);
+        string encryptedJson = File.ReadAllText(CurrentLevelPath);
         string json = EncryptionUtility.Decrypt(encryptedJson);
         LevelData levelData = JsonUtility.FromJson<LevelData>(json);
+
+        _levelEditorManager._playerSpawnPositionEE.transform.position = levelData.PlayerPosition;
+        _levelEditorManager._goalEE.transform.position = levelData.GoalPosition;
 
         _levelEditorManager._cameraEditorElement.transform.position = levelData.CameraPosition;
         _levelEditorManager.ChangeElementCameraSize(levelData.CameraSize);

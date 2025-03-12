@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using TMPro;
 using UnityEngine;
@@ -10,6 +11,7 @@ public class LevelButton : MonoBehaviour
     [SerializeField] Image _preview;
 
     string _levelPath;
+    LevelUploadRequestData _downloadedLevel;
     MainMenuCanvasManager _mainMenuCanvasManager;
     ParticularLevelWindowHandler _levelWindowHandler;
 
@@ -37,6 +39,37 @@ public class LevelButton : MonoBehaviour
     public void OnButtonPressed()
     {
         _mainMenuCanvasManager.OpenWindow(_levelWindowHandler._window);
-        _levelWindowHandler.ActivateWindow(_levelPath);
+
+        if (_downloadedLevel != null)
+        {
+            _levelWindowHandler.ActivateWindow(_downloadedLevel);
+            return;
+        }
+
+        string normalizedParent = Path.GetFullPath(Directory.GetParent(_levelPath).ToString());
+        string normalizedLocal = Path.GetFullPath(LevelSaver.LocalLevelFolder);
+        string normalizedOnline = Path.GetFullPath(LevelSaver.OnlineLevelFolder);
+
+        if (normalizedParent.Equals(normalizedLocal))
+        {
+            _levelWindowHandler.ActivateWindow(_levelPath);
+        }
+        else if (normalizedParent.Equals(normalizedOnline))
+        {
+            _levelWindowHandler.ActivateWindow(_levelPath, true);
+        }
+    }
+
+    public void Initialize(LevelUploadRequestData response, 
+        ParticularLevelWindowHandler particularLevelWindowHandler, 
+        MainMenuCanvasManager canvasManager)
+    {
+        // Set up button
+        _downloadedLevel = response;
+        _levelName.SetText(response.nombrelvl);
+        _levelWindowHandler = particularLevelWindowHandler;
+        _mainMenuCanvasManager = canvasManager;
+
+        _levelVerificationState.SetText(response.dificultad);
     }
 }

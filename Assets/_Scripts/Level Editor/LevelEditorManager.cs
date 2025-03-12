@@ -24,9 +24,6 @@ public class LevelEditorManager : MonoBehaviour
     [SerializeField] PlayerInput _playerInput;
     [SerializeField] ButtonUtilities _buttonUtilities;
     public UndoRedoManager UndoRedoManager;
-    public Camera _elementCamera;
-    public EditorElement _cameraEditorElement;
-    [SerializeField] LineRenderer _elementCameraFrustumRenderer;
 
     [SerializeField] Transform _elementsContent;
     [SerializeField] GameObject _elementButtonPrefab;
@@ -35,6 +32,16 @@ public class LevelEditorManager : MonoBehaviour
     [SerializeField] ScaleModeBehaviour _scaleMode;
 
     public EditorElementDataBase _elementDataBase;
+
+    [Header("Especial EE")]
+    public EditorElementData _playerData;
+    public EditorElement _playerSpawnPositionEE;
+    public EditorElementData _goalData;
+    public EditorElement _goalEE;
+    public Camera _elementCamera;
+    public EditorElement _cameraEditorElement;
+    [SerializeField] LineRenderer _elementCameraFrustumRenderer;
+
 
     [Header("Camera Movement")]
     [SerializeField] Camera _editorCamera;
@@ -85,7 +92,12 @@ public class LevelEditorManager : MonoBehaviour
 
     private void Start()
     {
-        if (_isPlayTesting) return;
+        if (_isPlayTesting) 
+        {
+            _playerSpawnPositionEE.InitializeElement();
+            _goalEE.InitializeElement();
+            return;
+        }
 
         UndoRedoManager = new();
 
@@ -360,7 +372,9 @@ public class LevelEditorManager : MonoBehaviour
         // Duplicate each selected element
         foreach (var element in _selectedElements)
         {
-            if (element.transform == _cameraEditorElement.transform)
+            if (element == _cameraEditorElement ||
+                element == _playerSpawnPositionEE ||
+                element == _goalEE)
                 continue;
 
             // Find the next available index
@@ -629,6 +643,10 @@ public class LevelEditorManager : MonoBehaviour
     {
         if (hit.transform == _cameraEditorElement.transform)
             _elementHit = _cameraEditorElement;
+        else if (hit.transform == _playerSpawnPositionEE.transform)
+            _elementHit = _playerSpawnPositionEE;
+        else if (hit.transform == _goalEE.transform)
+            _elementHit = _goalEE;
         else
         {
             // Get the element hit from the instanced elements

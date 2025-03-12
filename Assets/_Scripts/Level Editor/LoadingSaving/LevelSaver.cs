@@ -10,17 +10,40 @@ public class LevelSaver : MonoBehaviour
     [SerializeField] private LevelEditorManager _levelEditorManager;
     [SerializeField] LevelLoader _levelLoader;
 
+    private void Start()
+    {
+        if (!Directory.Exists(LocalLevelFolder))
+            Directory.CreateDirectory(LocalLevelFolder);
+
+        if (!Directory.Exists(OnlineLevelFolder))
+            Directory.CreateDirectory(OnlineLevelFolder);
+    }
+
     public string GenerateDefaultName()
     {
         int index = 0;
-        string fileName = $"newLevel ({index})";
+        string fileName = $"{index}";
         while (File.Exists(Path.Combine(LocalLevelFolder, fileName + ".json")))
         {
-            fileName = $"newLevel ({index})";
             index++;
+            fileName = $"{index}";
         }
 
+        fileName = $"newLevel ({index})";
         return fileName;
+    }
+
+    public int GetNewLocalID()
+    {
+        int index = 0;
+        string fileName = $"{index}";
+        while (File.Exists(Path.Combine(LocalLevelFolder, fileName + ".json")))
+        {
+            index++;
+            fileName = $"{index}";
+        }
+
+        return index;
     }
 
     public void SaveLevel()
@@ -30,14 +53,16 @@ public class LevelSaver : MonoBehaviour
         string json = EncryptionUtility.Decrypt(encryptedJson);
         LevelData levelData = JsonUtility.FromJson<LevelData>(json);
 
-        // Ensure the folder exists
-        if (!Directory.Exists(LocalLevelFolder))
-            Directory.CreateDirectory(LocalLevelFolder);
-
         if (levelData != null)
             levelData.SavedElements.Clear();
         else
             levelData = new();
+
+        levelData.PlayerData = _levelEditorManager._playerData;
+        levelData.PlayerPosition = _levelEditorManager._playerSpawnPositionEE.transform.position;
+
+        levelData.GoalData = _levelEditorManager._goalData;
+        levelData.GoalPosition = _levelEditorManager._goalEE.transform.position;
 
         levelData.CameraPosition = _levelEditorManager._cameraEditorElement.transform.position;
         levelData.CameraSize = _levelEditorManager._elementCamera.orthographicSize;
@@ -74,27 +99,5 @@ public class LevelSaver : MonoBehaviour
 
         File.WriteAllText(LevelLoader.CurrentLevelPath, encryptedJson);
         Debug.Log($"Level saved to: {LevelLoader.CurrentLevelPath}");
-    }
-
-    public void SaveLevel(LevelData levelData, string oldName)
-    {
-        string filePath;
-
-        if (!oldName.Equals(levelData.LevelName))
-        {
-            filePath = Path.Combine(LocalLevelFolder, oldName + ".json");
-
-            File.Delete(filePath);
-        }
-
-        filePath = Path.Combine(LocalLevelFolder, levelData.LevelName + ".json");
-
-        // Ensure the folder exists
-        if (!Directory.Exists(LocalLevelFolder))
-            Directory.CreateDirectory(LocalLevelFolder);
-
-        string json = JsonUtility.ToJson(levelData, true);
-        string encryptedJson = EncryptionUtility.Encrypt(json);
-        File.WriteAllText(filePath, encryptedJson);
     }
 }

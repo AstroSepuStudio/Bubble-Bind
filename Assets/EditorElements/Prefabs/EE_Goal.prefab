@@ -280,6 +280,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3870616691708938747}
     m_Modifications:
+    - target: {fileID: 1798008567208919414, guid: 718e3b10721ba7245ad29d2390fab290, type: 3}
+      propertyPath: _nextLevel
+      value: MainMenu
+      objectReference: {fileID: 0}
     - target: {fileID: 4047214120258067499, guid: 718e3b10721ba7245ad29d2390fab290, type: 3}
       propertyPath: m_Name
       value: Goal

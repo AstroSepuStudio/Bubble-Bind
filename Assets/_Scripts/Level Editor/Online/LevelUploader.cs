@@ -3,15 +3,6 @@ using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
 
-[System.Serializable]
-public class LevelUploadRequest
-{
-    public string nombrelvl;
-    public string descripcion;
-    public string dificultad;
-    public string datos_cifrados;
-}
-
 public class LevelUploader : MonoBehaviour
 {
     // URL del endpoint del backend
@@ -33,6 +24,13 @@ public class LevelUploader : MonoBehaviour
         if (!File.Exists(LevelLoader.CurrentLevelPath))
         {
             _mainCanvasManager.SendAlertMessage("The JSON file does not exist: " + LevelLoader.CurrentLevelPath);
+            yield break;
+        }
+
+        string token = _authenticationManager.GetToken(); // Recupera el token JWT almacenado
+        if (string.IsNullOrEmpty(token))
+        {
+            Debug.Log("Player not authenticated");
             yield break;
         }
 
@@ -63,15 +61,20 @@ public class LevelUploader : MonoBehaviour
             // 4. Enviar la solicitud
             yield return request.SendWebRequest();
 
-            LevelUploadResponse response = JsonUtility.FromJson<LevelUploadResponse>(request.downloadHandler.text);
+            LevelUploadRequestData response = JsonUtility.FromJson<LevelUploadRequestData>(request.downloadHandler.text);
 
             if (request.result == UnityWebRequest.Result.Success)
             {
                 _mainCanvasManager.SendAlertMessage(response.message);
+                levelData.ID = response.id;
+                json = JsonUtility.ToJson(levelData, true);
+                encryptedJson = EncryptionUtility.Encrypt(json);
+
+                File.WriteAllText(LevelLoader.CurrentLevelPath, encryptedJson);
             }
             else
             {
-                _mainCanvasManager.SendAlertMessage("Error while uploading the level: " + request.error);
+                _mainCanvasManager.SendAlertMessage("Error while uploading the level: " + response.error);
             }
         }
     }
@@ -80,14 +83,20 @@ public class LevelUploader : MonoBehaviour
 [System.Serializable]
 public class LevelUploadRequestData
 {
+    public int id;
     public string nombrelvl;
     public string descripcion;
+    public string autor;
     public string dificultad;
     public string datos_cifrados;
+
+    public string message;
+    public string error;
 }
 
 [System.Serializable]
-public class LevelUploadResponse
+public class LevelDownloadRequestData
 {
-    public string message;
+    public int id;
+    public string nombrelvl;
 }

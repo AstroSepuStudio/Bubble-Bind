@@ -13,8 +13,6 @@ MonoBehaviour:
   m_Name: EditorElementDataBase
   m_EditorClassIdentifier: 
   EditorElementDatas:
-  - {fileID: 11400000, guid: 1eb2f73c7b0311d4bb0882bf98ceea36, type: 2}
-  - {fileID: 11400000, guid: 881c56dd15de89b48a1d4f6247da1748, type: 2}
   - {fileID: 11400000, guid: 8f12af6707bf57748b0e5dc553261143, type: 2}
   - {fileID: 11400000, guid: 1f6412ee212a647499dd0b6dc148057a, type: 2}
   - {fileID: 11400000, guid: 62d59cf36371fca4090756dc55be9064, type: 2}

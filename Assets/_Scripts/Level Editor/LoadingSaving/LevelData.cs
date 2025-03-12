@@ -12,14 +12,25 @@ public class LevelData
     public string LevelName = "";
     public string LevelDescription = "";
     public LevelDifficulty Level_Difficulty = LevelDifficulty.Easy;
-    
+
+    public string Autor;
+
     // ---
+    public int ID;
     public string Hash = "";
     public bool IsLevelVerified = false;
 
     // Camera settings
-    public Vector3 CameraPosition = new Vector3(0, 0, -10);
+    public Vector3 CameraPosition = new(0, 0, -10);
     public float CameraSize = 5;
+
+    // Player settings
+    public EditorElementData PlayerData;
+    public Vector3 PlayerPosition = new(-5, -2, 0);
+
+    // Goal settings
+    public EditorElementData GoalData;
+    public Vector3 GoalPosition = new(5, 2, 0);
 
     // Saved from the LevelEditor scene (when the player is editing the level)
     public List<SavedElement> SavedElements = new();
