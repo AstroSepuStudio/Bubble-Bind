@@ -5483,7 +5483,7 @@ MonoBehaviour:
   _levelWindowHandler: {fileID: 565629426}
   _mainMenuCanvasManager: {fileID: 344161741}
   _newLevelButton: {fileID: 660951378}
-  _lvlDownloadURL: http://localhost/BubbleBindBackend/PHP/api/getlvl.php
+  _lvlDownloadURL: http://44.203.127.255/BubbleBindBackend/PHP/api/getlvl.php
   _lvlname: Nivel zero
 --- !u!1 &623237203
 GameObject:
@@ -9982,7 +9982,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 691ae91660857694f97febefe371d6af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  backendUrl: http://localhost/BubbleBindBackend/PHP/api/savelvl.php
+  backendUrl: http://44.203.127.255/BubbleBindBackend/PHP/api/savelvl.php
   _authenticationManager: {fileID: 1488744861}
   _mainCanvasManager: {fileID: 344161741}
 --- !u!1 &1162145940
@@ -13604,8 +13604,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29d69db368e7a514191ecac867b9eec0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LOGIN_URL: http://localhost/BubbleBindBackend/PHP/api/login.php
-  REGISTER_URL: http://localhost/BubbleBindBackend/PHP/api/registro.php
+  LOGIN_URL: http://44.203.127.255/BubbleBindBackend/PHP/api/login.php
+  REGISTER_URL: http://44.203.127.255/BubbleBindBackend/PHP/api/registro.php
   tokenFilePath: UserAuth
   _mainCanvasManager: {fileID: 344161741}
   _loginWindow: {fileID: 1003499119}
